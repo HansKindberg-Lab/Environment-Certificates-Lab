@@ -1,0 +1,65 @@
+﻿@model CertificateStoreViewModel
+<div class="card">
+	<div class="card-header">
+		<h1 class="h4 m-0 p-0">Certificate stores</h1>
+	</div>
+	<div class="card-body">
+		@if(Model.CertificateStores.Any())
+		{
+			<div id="accordion">
+				@foreach(var certificateStore in Model.CertificateStores)
+				{
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="@(certificateStore.HtmlId)-heading">
+							<button aria-controls="@(certificateStore.HtmlId)-collapse" aria-expanded="true" class="accordion-button" data-bs-target="#@(certificateStore.HtmlId)-collapse" data-bs-toggle="collapse" type="button">
+								@certificateStore.Text
+							</button>
+						</h2>
+						<div aria-labelledby="@(certificateStore.HtmlId)-heading" class="accordion-collapse collapse show" data-bs-parent-disabled="#accordion" id="@(certificateStore.HtmlId)-collapse">
+							<div class="accordion-body">
+								@if(certificateStore.Exception != null)
+								{
+									<div class="alert alert-danger m-0">@certificateStore.Exception.Message</div>
+								}
+								else if(certificateStore.Certificates.Any())
+								{
+									<ul class="list-group">
+										@foreach(var certificate in certificateStore.Certificates)
+										{
+											<li class="list-group-item">
+												<h3 class="h6 m-0">@certificate.Subject</h3>
+												<div class="ps-2">
+													<small class="form-text text-muted">
+														<strong>Subject: </strong>@certificate.Subject
+													</small><br />
+													<small class="form-text text-muted">
+														<strong>Issuer: </strong>@certificate.Issuer
+													</small><br />
+													<small class="form-text text-muted">
+														<strong>Serial-number: </strong>@certificate.SerialNumber
+													</small>
+												</div>
+											</li>
+										}
+									</ul>
+								}
+								else
+								{
+									<div class="alert alert-warning m-0">
+										<i>There are no certificates.</i>
+									</div>
+								}
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		}
+		else
+		{
+			<div class="alert alert-warning">
+				<i>There are no certificate stores.</i>
+			</div>
+		}
+	</div>
+</div>

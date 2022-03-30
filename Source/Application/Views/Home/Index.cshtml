@@ -1,0 +1,107 @@
+﻿@model FileSystemCertificatesViewModel
+<div class="card">
+	<div class="card-header">
+		<h1 class="h4 m-0 p-0">File-system certificates</h1>
+	</div>
+	<div class="card-body">
+		@if(Model.Breadcrumb.Any())
+		{
+			<nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+				<ol class="breadcrumb">
+					@foreach(var item in Model.Breadcrumb)
+					{
+						if(item.Selected)
+						{
+							<li aria-current="page" class="breadcrumb-item active">@item.Text</li>
+						}
+						else
+						{
+							<li class="breadcrumb-item">
+								<a href="?@nameof(Model.Path)=@item.Value&@nameof(Model.Recursive)=@Model.Recursive&@nameof(Model.SearchPattern)=@Model.SearchPattern">@item.Text</a>
+							</li>
+						}
+					}
+				</ol>
+			</nav>
+		}
+		@if(Model.Directories.Any())
+		{
+			<div class="mb-3">
+				<a aria-controls="collapseExample" aria-expanded="false" class="btn btn-outline-primary" data-bs-toggle="collapse" href="#sub-directories" role="button">Sub-directories</a>
+				<ul class="collapse mt-2" id="sub-directories">
+					@foreach(var directory in Model.Directories)
+					{
+						<li>
+							<a href="?@nameof(Model.Path)=@directory.FullName&@nameof(Model.Recursive)=@Model.Recursive&@nameof(Model.SearchPattern)=@Model.SearchPattern">@directory.Name</a>
+						</li>
+					}
+				</ul>
+			</div>
+		}
+		<form class="border border-1 border-secondary p-3 rounded-3">
+			<div class="mb-3">
+				<label for="path-input">Path</label>
+				<input class="form-control" id="path-input" name="@nameof(Model.Path)" value="@Model.Path" />
+			</div>
+			<div class="form-check mb-2">
+				<input checked="@(Model.Recursive ? "checked" : null)" class="form-check-input" id="recursive-input" name="@nameof(Model.Recursive)" type="checkbox" value="True" />
+				<label class="form-check-label" for="recursive-input">Recursive</label>
+			</div>
+			<input name="@nameof(Model.Search)" type="hidden" value="True" />
+			<div class="mb-3">
+				<label for="search-pattern-input">Pattern</label>
+				<input class="form-control" id="search-pattern-input" name="@nameof(Model.SearchPattern)" value="@Model.SearchPattern" />
+			</div>
+			<div class="text-end">
+				<button class="btn btn-primary" type="submit">Search</button>
+				<a asp-action="Index" class="btn btn-secondary">Clear</a>
+			</div>
+		</form>
+		@if(Model.Exception == null)
+		{
+			@if(Model.Certificates.Any())
+			{
+				<ul class="list-group m-0 mt-3">
+					@foreach(var fileSystemCertificate in Model.Certificates)
+					{
+						<li class="list-group-item">
+							<h2 class="h6">@fileSystemCertificate.Path</h2>
+							@if(fileSystemCertificate.Exception == null)
+							{
+								<div class="ps-2">
+									<small class="form-text text-muted">
+										<strong>Subject: </strong>@fileSystemCertificate.Certificate.Subject
+									</small><br />
+									<small class="form-text text-muted">
+										<strong>Issuer: </strong>@fileSystemCertificate.Certificate.Issuer
+									</small><br />
+									<small class="form-text text-muted">
+										<strong>Serial-number: </strong>@fileSystemCertificate.Certificate.SerialNumber
+									</small>
+								</div>
+							}
+							else
+							{
+								<div class="alert alert-danger m-0">
+									@fileSystemCertificate.Exception.Message
+								</div>
+							}
+						</li>
+					}
+				</ul>
+			}
+			else if(Model.Search)
+			{
+				<div class="alert alert-warning m-0 mt-3">
+					<i>No file-system certificates found.</i>
+				</div>
+			}
+		}
+		else
+		{
+			<div class="alert alert-danger">
+				@Model.Exception.Message
+			</div>
+		}
+	</div>
+</div>
