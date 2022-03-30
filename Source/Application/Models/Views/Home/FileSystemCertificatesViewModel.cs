@@ -10,7 +10,7 @@ namespace Application.Models.Views.Home
 		#region Properties
 
 		public virtual IList<SelectListItem> Breadcrumb { get; } = new List<SelectListItem>();
-		public virtual IList<FileSystemCertificate> Certificates { get; } = new List<FileSystemCertificate>();
+		public virtual IList<CertificateFile> CertificateFiles { get; } = new List<CertificateFile>();
 		public virtual IList<DirectoryInfo> Directories { get; } = new List<DirectoryInfo>();
 		public virtual Exception Exception { get; set; }
 		public virtual string Path { get; set; }

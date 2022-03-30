@@ -143,30 +143,36 @@ namespace Application.Controllers
 
 						foreach(var filePath in Directory.GetFiles(model.Path, model.SearchPattern, enumerationOptions))
 						{
-							var fileSystemCertificate = new FileSystemCertificate
+							var certificateFile = new CertificateFile
 							{
 								Path = filePath
 							};
 
 							try
 							{
-								using(var certificate = new X509Certificate2(await System.IO.File.ReadAllBytesAsync(filePath)))
+								var certificates = new X509Certificate2Collection();
+								certificates.ImportFromPemFile(filePath);
+
+								foreach(var certificate in certificates)
 								{
-									fileSystemCertificate.Certificate = new Certificate
+									using(certificate)
 									{
-										Issuer = certificate.Issuer,
-										SerialNumber = certificate.SerialNumber,
-										Subject = certificate.Subject,
-										Thumbprint = certificate.Thumbprint
-									};
+										certificateFile.Certificates.Add(new Certificate
+										{
+											Issuer = certificate.Issuer,
+											SerialNumber = certificate.SerialNumber,
+											Subject = certificate.Subject,
+											Thumbprint = certificate.Thumbprint
+										});
+									}
 								}
 							}
 							catch(Exception exception)
 							{
-								fileSystemCertificate.Exception = new InvalidOperationException($"Could not load certificate from file \"{filePath}\".", exception);
+								certificateFile.Exception = new InvalidOperationException($"Could not load certificates from file \"{filePath}\".", exception);
 							}
 
-							model.Certificates.Add(fileSystemCertificate);
+							model.CertificateFiles.Add(certificateFile);
 						}
 					}
 				}

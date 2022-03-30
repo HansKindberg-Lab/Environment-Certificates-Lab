@@ -59,31 +59,46 @@
 		</form>
 		@if(Model.Exception == null)
 		{
-			@if(Model.Certificates.Any())
+			@if(Model.CertificateFiles.Any())
 			{
 				<ul class="list-group m-0 mt-3">
-					@foreach(var fileSystemCertificate in Model.Certificates)
+					@foreach(var certificateFile in Model.CertificateFiles)
 					{
 						<li class="list-group-item">
-							<h2 class="h6">@fileSystemCertificate.Path</h2>
-							@if(fileSystemCertificate.Exception == null)
+							<h2 class="h6">@certificateFile.Path</h2>
+							@if(certificateFile.Exception == null)
 							{
-								<div class="ps-2">
-									<small class="form-text text-muted">
-										<strong>Subject: </strong>@fileSystemCertificate.Certificate.Subject
-									</small><br />
-									<small class="form-text text-muted">
-										<strong>Issuer: </strong>@fileSystemCertificate.Certificate.Issuer
-									</small><br />
-									<small class="form-text text-muted">
-										<strong>Serial-number: </strong>@fileSystemCertificate.Certificate.SerialNumber
-									</small>
-								</div>
+								if(certificateFile.Certificates.Any())
+								{
+									<ul class="list-group">
+										@foreach(var certificate in certificateFile.Certificates)
+										{
+											<li class="list-group-item">
+												<h3 class="h6">@certificate.Subject</h3>
+												<small class="form-text text-muted">
+													<strong>Subject: </strong>@certificate.Subject
+												</small><br />
+												<small class="form-text text-muted">
+													<strong>Issuer: </strong>@certificate.Issuer
+												</small><br />
+												<small class="form-text text-muted">
+													<strong>Serial-number: </strong>@certificate.SerialNumber
+												</small>
+											</li>
+										}
+									</ul>
+								}
+								else
+								{
+									<div class="alert alert-warning m-0">
+										<i>The certificate-file contains no certificates.</i>
+									</div>
+								}
 							}
 							else
 							{
 								<div class="alert alert-danger m-0">
-									@fileSystemCertificate.Exception.Message
+									@certificateFile.Exception.Message
 								</div>
 							}
 						</li>
